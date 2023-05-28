@@ -1,74 +1,49 @@
 import styles from './Product.module.scss';
-import clsx from 'clsx';
-import Button from '../Button/Button';
+import ProductImage from '../ProductImage/ProductImage';
+import ProductOptions from '../ProductOptions/ProductOptions';
 import { useState } from 'react';
-import shortid from 'shortid';
+import PropTypes from 'prop-types';
 
-
-const Product = props => {
-
+const Product = (props) => {
   const [currentColor, setCurrentColor] = useState(props.colors[0]);
-  console.log('currentColor :>> ', currentColor);
-
   const [currentSize, setCurrentSize] = useState(props.sizes[0]);
-  console.log('currentSize :>> ', currentSize);
 
-  const prepareColorClassName = (color) => {
-    return styles[
-      'color' + color[0].toUpperCase() + color.substr(1).toLowerCase()
-    ];
+  const calculatePrice = () => {
+    let price = props.basePrice;
+    if (currentSize.additionalPrice) {
+      price += currentSize.additionalPrice;
+    }
+    return price;
   };
   return (
     <article className={styles.product}>
-      <div className={styles.imageContainer}>
-        <img
-          className={styles.image}
-          alt={props.title}
-          src={`${process.env.PUBLIC_URL}/images/products/shirt-${props.name}--${currentColor}.jpg`}
-        />
-      </div>
+      <ProductImage name={props.name} currentColor={currentColor} />
       <div>
         <header>
           <h2 className={styles.name}>{props.title}</h2>
-          <span className={styles.price}>Price: {props.basePrice}$</span>
+          <span className={styles.price}>Price: {calculatePrice()}$</span>
         </header>
-        <form>
-          <div className={styles.sizes}>
-            <h3 className={styles.optionLabel}>Sizes</h3>
-            <ul className={styles.choices}>
-              {props.sizes.map((size) => (
-                <Button
-                  key={shortid()}
-                  size={size.name}
-                  onClick={() => setCurrentSize(size)}
-                >
-                  {size.name}
-                </Button>
-              ))}
-            </ul>
-          </div>
-          <div className={styles.colors}>
-            <h3 className={styles.optionLabel}>Colors</h3>
-            <ul className={styles.choices}>
-              {props.colors.map((color) => (
-                <Button
-                  key={shortid()}
-                  className={clsx(
-                    prepareColorClassName(color),
-                    currentColor === color && styles.active
-                  )}
-                  onClick={() => setCurrentColor(color)}
-                />
-              ))}
-            </ul>
-          </div>
-          <Button className={styles.button}>
-            <span className="fa fa-shopping-cart" />
-          </Button>
-        </form>
+        <ProductOptions
+          sizes={props.sizes}
+          colors={props.colors}
+          currentSize={currentSize}
+          currentColor={currentColor}
+          setCurrentSize={setCurrentSize}
+          setCurrentColor={setCurrentColor}
+          title={props.title}
+          basePrice={props.basePrice}
+        />
       </div>
     </article>
   );
+};
+
+Product.propTypes = {
+  name: PropTypes.string.isRequired,
+  colors: PropTypes.array.isRequired,
+  sizes: PropTypes.array.isRequired,
+  basePrice: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default Product;
