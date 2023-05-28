@@ -17,7 +17,7 @@ const Product = (props) => {
   };
   return (
     <article className={styles.product}>
-      <ProductImage name={props.name} currentColor={currentColor} />
+      <ProductImage title={props.title} name={props.name} currentColor={currentColor} />
       <div>
         <header>
           <h2 className={styles.name}>{props.title}</h2>
